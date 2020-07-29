@@ -1,9 +1,12 @@
+import 'package:bmi_calculator/calculator_brain.dart';
+import 'package:bmi_calculator/screens/results_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'icon_content.dart';
-import 'reusable_card.dart';
-import 'constants.dart';
-import 'card_fabs.dart';
+import '../components/bottom_button.dart';
+import '../components/icon_content.dart';
+import '../components/reusable_card.dart';
+import '../constants.dart';
+import '../components/card_fabs.dart';
 
 enum Gender {
   male,
@@ -11,6 +14,7 @@ enum Gender {
 }
 
 class InputPage extends StatefulWidget {
+  static const routeName = '/';
   @override
   _InputPageState createState() => _InputPageState();
 }
@@ -89,7 +93,10 @@ class _InputPageState extends State<InputPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.baseline,
                             children: <Widget>[
-                              Text(height.toString(), style: kNumberTextStyle),
+                              Text(
+                                height.toString(),
+                                style: kNumberTextStyle,
+                              ),
                               Text(
                                 'cm',
                                 style: kLabelTextStyle,
@@ -98,14 +105,17 @@ class _InputPageState extends State<InputPage> {
                           ),
                           SliderTheme(
                             data: SliderTheme.of(context).copyWith(
-                                activeTrackColor: Colors.white,
-                                inactiveTrackColor: Color(0XFF8D8E98),
-                                thumbColor: Color(0XFFEB1555),
-                                overlayColor: Color(0X29EB1555),
-                                thumbShape: RoundSliderThumbShape(
-                                    enabledThumbRadius: 15.0),
-                                overlayShape: RoundSliderOverlayShape(
-                                    overlayRadius: 30.0)),
+                              activeTrackColor: Colors.white,
+                              inactiveTrackColor: Color(0XFF8D8E98),
+                              thumbColor: Color(0XFFEB1555),
+                              overlayColor: Color(0X29EB1555),
+                              thumbShape: RoundSliderThumbShape(
+                                enabledThumbRadius: 15.0,
+                              ),
+                              overlayShape: RoundSliderOverlayShape(
+                                overlayRadius: 30.0,
+                              ),
+                            ),
                             child: Slider(
                                 value: height.toDouble(),
                                 min: 120.0,
@@ -141,11 +151,20 @@ class _InputPageState extends State<InputPage> {
                 ],
               ),
             ),
-            Container(
-                height: kBottomContainerHeigh,
-                width: double.infinity,
-                color: kBottomContainerColor,
-                margin: EdgeInsets.only(top: 10.0))
+            BottomButton(
+                buttonTitle: 'CALCULATE',
+                onTap: () {
+                  CalculatorBrain calc = CalculatorBrain(
+                    height: height,
+                    weight: weight,
+                  );
+                  Navigator.pushNamed(context, ResultsPage.routeName,
+                      arguments: ResultsPage(
+                        bmiResult: calc.calculateBMI(),
+                        interpretation: calc.getInterpretation(),
+                        resultText: calc.getResult(),
+                      ));
+                })
           ],
         ));
   }
