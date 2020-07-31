@@ -1,3 +1,4 @@
+import 'package:clima/screens/city_screen.dart';
 import 'package:clima/services/weather.dart';
 import 'package:flutter/material.dart';
 import 'package:clima/utilities/constants.dart';
@@ -12,11 +13,11 @@ class LocationScreen extends StatefulWidget {
 }
 
 class _LocationScreenState extends State<LocationScreen> {
-  int condition;
+  WeatherModel weatherModel = WeatherModel();
+  int temperature;
   String cityName;
-  double temp;
-  String icon;
-  String message;
+  String weatherIcon;
+  String weatherMessage;
 
   @override
   void initState() {
@@ -25,11 +26,21 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   void updateUI(Map<String, dynamic> weatherData) {
-    temp = widget.locationWeather['main']['temp'];
-    condition = widget.locationWeather['weather'][0]['id'];
-    cityName = widget.locationWeather['name'];
-    icon = WeatherModel().getWeatherIcon(condition);
-    message = WeatherModel().getMessage(temp.round()) + ' in $cityName';
+    setState(() {
+      if (weatherData['error'] != null) {
+        temperature = 0;
+        cityName = '';
+        weatherIcon = 'Error';
+        weatherMessage = 'Unable to get weather data';
+        return;
+      }
+      temperature = weatherData['main']['temp'].toInt();
+      cityName = weatherData['name'];
+
+      int condition = weatherData['weather'][0]['id'];
+      weatherIcon = weatherModel.getWeatherIcon(condition);
+      weatherMessage = weatherModel.getMessage(temperature) + ' in $cityName';
+    });
   }
 
   @override
@@ -41,7 +52,9 @@ class _LocationScreenState extends State<LocationScreen> {
             image: AssetImage('images/location_background.jpg'),
             fit: BoxFit.cover,
             colorFilter: ColorFilter.mode(
-                Colors.white.withOpacity(0.8), BlendMode.dstATop),
+              Colors.white.withOpacity(0.8),
+              BlendMode.dstATop,
+            ),
           ),
         ),
         constraints: BoxConstraints.expand(),
@@ -54,18 +67,25 @@ class _LocationScreenState extends State<LocationScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   FlatButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      updateUI(await weatherModel.getLocationWeather());
+                    },
                     child: Icon(
                       Icons.near_me,
                       size: 50.0,
                     ),
                   ),
                   FlatButton(
-                    onPressed: () {},
-                    child: Icon(
-                      Icons.location_city,
-                      size: 50.0,
-                    ),
+                    onPressed: () async {
+                      String typedCity = await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CityScreen()),
+                      );
+                      if (typedCity != null) {
+                        updateUI(await weatherModel.getCityWeather(typedCity));
+                      }
+                    },
+                    child: Icon(Icons.location_city, size: 50.0),
                   ),
                 ],
               ),
@@ -73,21 +93,15 @@ class _LocationScreenState extends State<LocationScreen> {
                 padding: EdgeInsets.only(left: 15.0),
                 child: Row(
                   children: <Widget>[
-                    Text(
-                      temp.toStringAsFixed(1).toString() + '°',
-                      style: kTempTextStyle,
-                    ),
-                    Text(
-                      icon,
-                      style: kConditionTextStyle,
-                    ),
+                    Text(temperature.toString() + '°', style: kTempTextStyle),
+                    Text(weatherIcon, style: kConditionTextStyle),
                   ],
                 ),
               ),
               Padding(
                 padding: EdgeInsets.only(right: 15.0),
                 child: Text(
-                  message,
+                  weatherMessage,
                   textAlign: TextAlign.right,
                   style: kMessageTextStyle,
                 ),
