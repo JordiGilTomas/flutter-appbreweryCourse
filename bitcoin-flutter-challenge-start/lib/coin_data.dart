@@ -1,4 +1,5 @@
-//TODO: Add your imports here.
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 
 const List<String> currenciesList = [
   'AUD',
@@ -31,8 +32,16 @@ const List<String> cryptoList = [
 ];
 
 const coinAPIURL = 'https://rest.coinapi.io/v1/exchangerate';
-const apiKey = 'YOUR-API-KEY-HERE';
+final String apiKey = DotEnv().env['API_KEY'];
 
 class CoinData {
-  //TODO: Create your getCoinData() method here.
+  CoinData({this.base, this.quote});
+
+  final String base;
+  final String quote;
+
+  Future<http.Response> getCoinData() async => http.get(
+        coinAPIURL + '/$base/$quote',
+        headers: {'X-CoinAPI-Key': apiKey},
+      );
 }
