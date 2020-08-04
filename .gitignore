@@ -3,3 +3,5 @@ bitcoin-ticker-flutter/ios/Flutter/flutter_export_environment.sh
 bitcoin-flutter-challenge-start/.env
 bitcoin-flutter-silver-start/.env
 bitcoin-flutter-gold-start/.env
+flash-chat-flutter/android/app/google-services.json
+flash-chat-flutter/.flutter-plugins-dependencies
