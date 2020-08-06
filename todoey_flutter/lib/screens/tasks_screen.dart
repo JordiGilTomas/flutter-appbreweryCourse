@@ -56,7 +56,7 @@ class _TasksScreenState extends State<TasksScreen> {
                       fontWeight: FontWeight.w700),
                 ),
                 Text(
-                  '12 Tasks',
+                  tasklist.tasksToDo(),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18.0,
@@ -69,6 +69,7 @@ class _TasksScreenState extends State<TasksScreen> {
             child: Container(
               child: TaskList(
                 tasks: tasklist.getTasks(),
+                onChange: () => setState(() => {}),
               ),
               decoration: BoxDecoration(
                 color: Colors.white,
