@@ -1,18 +1,22 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:collection';
+
+import 'package:flutter/foundation.dart';
 import 'package:todoey_flutter/models/task.dart';
 
 class Tasks extends ChangeNotifier {
-  List<Task> tasks = [];
+  List<Task> _tasks = [];
 
   void addTask(String task) {
-    if (task != null) tasks.add(Task(name: task));
-    notifyListeners();
+    if (task != null) {
+      _tasks.add(Task(name: task));
+      notifyListeners();
+    }
   }
 
-  List<Task> getTasks() => tasks;
+  UnmodifiableListView<Task> get tasks => UnmodifiableListView(_tasks);
 
   String tasksToDo() {
-    int tasksToDo = tasks.fold(
+    int tasksToDo = _tasks.fold(
         0, (tasksToDo, task) => !task.isDone ? tasksToDo += 1 : tasksToDo);
 
     if (tasksToDo == 0) return 'No Tasks to do';
@@ -21,7 +25,12 @@ class Tasks extends ChangeNotifier {
   }
 
   void changeTaskStatus(int index) {
-    tasks[index].isDone = !tasks[index].isDone;
+    _tasks[index].isDone = !_tasks[index].isDone;
+    notifyListeners();
+  }
+
+  void deleteTask(int index) {
+    _tasks.removeAt(index);
     notifyListeners();
   }
 }

@@ -6,12 +6,13 @@ import 'package:todoey_flutter/widgets/task_title.dart';
 class TaskList extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Consumer<Tasks>(
-        builder: (context, tasks, child) => ListView.builder(
+        builder: (context, taskList, child) => ListView.builder(
             itemBuilder: (context, index) => TaskTile(
-                  title: tasks.getTasks()[index].name,
-                  isChecked: tasks.getTasks()[index].isDone,
-                  index: index,
+                  title: taskList.tasks[index].name,
+                  isChecked: taskList.tasks[index].isDone,
+                  toogleStatus: () => taskList.changeTaskStatus(index),
+                  deleteTask: () => taskList.deleteTask(index),
                 ),
-            itemCount: tasks.getTasks().length),
+            itemCount: taskList.tasks.length),
       );
 }
